@@ -87,3 +87,26 @@ INSERT IGNORE INTO reservations (id, house_id, user_id, checkin_date, checkout_d
 INSERT IGNORE INTO reservations (id, house_id, user_id, checkin_date, checkout_date, number_of_people, amount) VALUES (9, 9, 1, '2023-04-01', '2023-04-02', 5, 9000);
 INSERT IGNORE INTO reservations (id, house_id, user_id, checkin_date, checkout_date, number_of_people, amount) VALUES (10, 10, 1, '2023-04-01', '2023-04-02', 6, 10000);
 INSERT IGNORE INTO reservations (id, house_id, user_id, checkin_date, checkout_date, number_of_people, amount) VALUES (11, 11, 1, '2023-04-01', '2023-04-02', 2, 6000);
+
+-- reviewsテーブルのレコードを作成(10件)
+INSERT IGNORE INTO reviews (id, house_id, user_id, score, content) VALUES (1, 1, 1, 4, 'すばらしいです。');
+INSERT IGNORE INTO reviews (id, house_id, user_id, score, content) VALUES (2, 2, 1, 5, 'すごいです。');
+INSERT IGNORE INTO reviews (id, house_id, user_id, score, content) VALUES (3, 3, 1, 4, 'よかったです。');
+INSERT IGNORE INTO reviews (id, house_id, user_id, score, content) VALUES (4, 4, 1, 3, 'また行きたいです。');
+INSERT IGNORE INTO reviews (id, house_id, user_id, score, content) VALUES (5, 5, 1, 5, '最高でした。');
+INSERT IGNORE INTO reviews (id, house_id, user_id, score, content) VALUES (6, 6, 1, 3, '楽しかったです。');
+INSERT IGNORE INTO reviews (id, house_id, user_id, score, content) VALUES (7, 7, 1, 4, '温泉が気持ちよかったです。');
+INSERT IGNORE INTO reviews (id, house_id, user_id, score, content) VALUES (8, 8, 1, 3, 'くつろげました。');
+INSERT IGNORE INTO reviews (id, house_id, user_id, score, content) VALUES (9, 9, 1, 3, '雰囲気が良かったです。');
+INSERT IGNORE INTO reviews (id, house_id, user_id, score, content) VALUES (10, 10, 1, 5, '次も行きたいです。');
+ -- favoritesテーブルのレコードを作成(10件)
+INSERT IGNORE INTO favorites (id, house_id, user_id) VALUES (1, 1, 1);
+INSERT IGNORE INTO favorites (id, house_id, user_id) VALUES (2, 2, 1);
+INSERT IGNORE INTO favorites (id, house_id, user_id) VALUES (3, 3, 1);
+INSERT IGNORE INTO favorites (id, house_id, user_id) VALUES (4, 4, 1);
+INSERT IGNORE INTO favorites (id, house_id, user_id) VALUES (5, 5, 1);
+INSERT IGNORE INTO favorites (id, house_id, user_id) VALUES (6, 6, 1);
+INSERT IGNORE INTO favorites (id, house_id, user_id) VALUES (7, 7, 1);
+INSERT IGNORE INTO favorites (id, house_id, user_id) VALUES (8, 8, 1);
+INSERT IGNORE INTO favorites (id, house_id, user_id) VALUES (9, 9, 1);
+INSERT IGNORE INTO favorites (id, house_id, user_id) VALUES (10, 10, 1);

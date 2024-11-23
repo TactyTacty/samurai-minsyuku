@@ -19,6 +19,7 @@
                  <div class="container pt-4 pb-5 samuraitravel-container">
                      <div class="row justify-content-center">
                          <div class="col-xxl-9 col-xl-10 col-lg-11">
+							 <div class="d-flex justify-content-between mb-4">
                              <nav class="mb-4" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                                  <ol class="breadcrumb mb-0">                        
                                      <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
@@ -27,7 +28,32 @@
                                  </ol>
                              </nav> 
                              
-                             <h1 class="mb-4 text-center" th:text="${house.getName()}"></h1>                                                           
+                             <!-- お気に入り機能 ここから -->
+                                 <!-- divタグへsec:authorizeにてログイン済みを設定 -->
+                                 <div sec:authorize="isAuthenticated()">
+                                     <!-- divタグへth:ifにてfavoriteFlagを設定 -->
+                                     <div th:if="${favoriteFlag}">
+                                         <a href="#" onclick="event.preventDefault(); document.getElementById('favorite-form').submit();">&#9829; お気に入り解除</a>
+                                         <!-- formタグへth:actionにて/houses/(houseのgetId())/favorites/(favoriteのgetId())/deleteを設定 -->
+                                         <form method="post" th:action="@{/houses/__${house.getId()}__/favorites/__${favorite.getId()}__/delete}"></form>
+                                     </div>
+                                     <!-- divタグへth:unlessにてfavoriteFlagを設定 -->
+                                     <div th:unless="${favoriteFlag}">
+                                         <a href="#" onclick="event.preventDefault(); document.getElementById('favorite-form').submit();">&#9825; お気に入り追加</a>
+                                         <!-- formタグへth:actionにて/houses/(houseのgetId())/favorites/createを設定 -->
+                                         <form method="post" th:action="@{/houses/__${house.getId()}__/favorites/create}"></form>                                          
+                                     </div>
+                                 </div>                            
+                             </div>
+                             <!-- お気に入り機能 ここまで -->
+                             
+                             <h1 class="mb-4 text-center" th:text="${house.getName()}"></h1>  
+                             
+                             <!-- divタグへth:ifにてsuccessMessageを設定 -->
+                             <div class = "alert alert-info" th:if = "${successMessage}">
+                                 <!-- spanタグへth:textにてsuccessMessageを設定 -->
+                                 <span th:text = "${successMessage}"></span>
+                             </div>                                                           
                              
                              <div th:if="${errorMessage}" class="alert alert-danger">
                                  <span th:text="${errorMessage}"></span>
@@ -143,9 +169,82 @@
                                                  </form>                                                                     
                                              </div>
                                          </div>  
-                                     </div>                                                                                                                     
+                                     </div>  
+                                                                                                                                                          
                                  </div>                                                                                             
                              </div>
+                             
+                             <!-- レビュー機能 ここから -->
+                             <div class="container px-0">
+                                 <h2 class="mb-4 text-center">レビュー</h2>
+                                 <!-- divタグへsec:authorizeにてログイン済みを設定。またth:unlessにてreviewFlagを設定 -->
+                                 <div class="row justify-content-center mb-4" sec:authorize="isAuthenticated()" th:unless="${reviewFlag}">
+                                     <div class="col-lg-4">
+                                         <!-- aタグへth:hrefにて/houses/(houseのgetId())/reviews/registerを設定 -->
+                                         <a th:href="@{/houses/__${house.getId()}__/reviews/register}">レビューを投稿する</a>
+                                     </div>
+                                 </div>
+                                 <!-- divタグへth:ifにてreviewListが無い(##lists.isEmpty)を設定 -->
+                                 <div class="mb-4" th:if="${#lists.isEmpty('reviewList')}">                                    
+                                     <p class="text-center">まだレビューがありません。</p>                                    
+                                 </div>                                                                 
+                                 <!-- divタグへth:unlessにてreviewListが無い(##lists.isEmpty)を設定 -->
+                                 <div class="row row-cols-1 row-cols-md-2 g-4 mb-4" th:unless="${#list.isEmpty(reviewList)}">
+                                     <!-- divタグへth:eachでreviewListをreviewで使用出来るように設定 -->
+                                     <div th:each="review : ${reviewList}">
+                                         <div class="col">
+                                             <div class="card">
+                                                 <div class="card-body">
+                                                     <div class="d-flex justify-content-between">
+                                                         <!-- h5タグへth:textでreview.getUser()のgetName()を設定 -->
+                                                         <h5 class="card-title" th:text="${review.getUser().getName()}"></h5>
+                                                         <!-- spanタグへsec:authorizeにてログイン済みを設定。またth:ifにて#authentication.principal.user.id == reviewのgetUser.getId()を設定 -->
+                                                         <span sec:authorize="isAuthenticated()" th:if="${#authentication.principal.user.id == review.getUser().getId()}">
+                                                             <!-- aタグへth:hrefにて/houses/(houseのgetId())/reviews/(reviewのgetId())/editを設定 -->
+                                                             <a class="me-2" th:href="@{/houses/__${house.getId()}__/reviews/__${review.getId()}__/edit}">編集</a>
+                                                             <a href="#" class="samuraitravel-link-danger" data-bs-toggle="modal" th:data-bs-target="${'#deleteReviewModal' + review.getId()}">削除</a>
+                                                             <!-- 以下に削除用モーダルを実装(admin/houses/index.htmlを参照にしてください) -->
+                                                             <div class="modal fade" th:id="${'deleteReviewModal' + review.getId()}" tabindex="-1" th:aria-labelledby="${'deleteReviewModalLabel' + review.getId()}">
+                                                                 <div class="modal-dialog">
+                                                                     <div class="modal-content">
+                                                                         <div class="modal-header">
+                                                                             <h5 class="modal-title" th:id="${'deleteReviewModalLabel' + review.getId()}" th:text="${house.getName() + 'のレビューを削除してもよろしいですか？'}"></h5>
+                                                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+                                                                         </div>
+                                                                         <div class="modal-footer">
+                                                                             <form method="post"th:action="@{/houses/__${house.getId()}__/reviews/__${review.getId()}__/delete}">
+                                                                                 <button type="submit" class="btn samuraitravel-btn-danger text-white shadow-sm">削除</button>
+                                                                             </form>
+                                                                         </div>
+                                                                     </div>
+                                                                 </div>
+                                                             </div>
+                                                         </span>      
+                                                     </div>                                              
+                                                     <p class="card-text mb-1">
+                                                        <!-- spanタグへth:ifでreviewのgetScore()が1~5だった場合はそれぞれ☆1～☆5とするように設定(左記の理由によりspanタグが5個出来るイメージです) -->
+                                                       
+                            				 <span th:if="${review.getScore().equals('5')}">★★★★★</span>
+                            				 <span th:if="${review.getScore().equals('4')}">★★★★☆</span>
+                            				 <span th:if="${review.getScore().equals('3')}">★★★☆☆</span>
+                            				 <span th:if="${review.getScore().equals('2')}">★★☆☆☆</span>
+                          					 <span th:if="${review.getScore().equals('1')}">★☆☆☆☆</span>
+                                                     </p>                      
+                                                     <!-- pタグへth:textでreviewのgetContent()を設定 -->
+                                                     <p class="card-text" th:text="${review.getContent()}"></p>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>                                     
+                                 </div>    
+                                 <!-- divタグへth:ifにてtotalReviewCountが6より大きい場合を設定 -->
+                                 <div class="text-center mb-4" th:if="${totalReviewCount > 6}">
+                                     <!-- aタグへth:hrefにて/houses/houseのgetId()/reviewsを設定 -->
+                                     <a th:href="@{/houses/__${house.getId()}__/reviews}">すべてのレビューを見る</a>
+                                 </div>                                                            
+                             </div> 
+                             <!-- レビュー機能 ここまで -->
+                             
                          </div>
                      </div>
                  </div>
@@ -160,6 +259,6 @@
          <!-- Flatpickr -->
          <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
          <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
-         <script th:src="@{/js/flatpickr.js}"></script>
+         <script th:src="@{/js/flatpickr.js}"></script>      
    </body>
  </html>
